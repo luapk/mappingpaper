@@ -49,11 +49,13 @@ a{color:inherit}
 .range-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .product{background:var(--paper);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 18px 30px -18px rgba(0,0,0,.6);display:flex;flex-direction:column;transform:rotate(var(--tilt,0deg));transition:transform .2s}
 .product:hover{transform:rotate(0deg) translateY(-3px)}
-.product .ph{position:relative;aspect-ratio:1/1;background:#fff;display:grid;place-items:center;overflow:hidden}
-.product .ph img{width:100%;height:100%;object-fit:contain;padding:8%}
+.product .ph{position:relative;aspect-ratio:1/1;background:#dcdcdc;display:grid;place-items:center;overflow:hidden}
+.product .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
 .product .ph svg{width:58%;height:58%;display:none}
-.product.no-img .ph img{display:none}
+.product .ph .cat{z-index:1}
+.product.no-img .ph img{visibility:hidden}
 .product.no-img .ph svg{display:block}
+.product.no-img .ph{background:#fff}
 .product .ph .cat{position:absolute;left:10px;top:10px;font-family:var(--label);text-transform:uppercase;letter-spacing:.1em;font-weight:700;font-size:11px;background:var(--pine);color:var(--cream);border-radius:999px;padding:3px 9px}
 .product .meta{padding:10px 12px 12px}
 .product b{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.04em;font-size:15px;line-height:1.15}
@@ -1235,10 +1237,11 @@ function icon(mode){
    Photos live in assets/products/. Until a photo is there, the card shows a drawn icon.
    ========================================================================= */
 const RANGE = [
-  {cat:"Boots",  n:"Tellurix Titanium OutDry Mid", img:"assets/products/tellurix-titanium-outdry-mid.jpg", line:"Waterproof. In-law tested.", icon:"boot", tilt:"-2deg"},
-  {cat:"Down",   n:"Arctic Crest Down Hooded Jacket", img:"assets/products/arctic-crest-down-hooded-jacket.jpg", line:"700-fill down. Nobody's taking your coat at the door.", icon:"puffer", tilt:"1.5deg"},
-  {cat:"Shell",  n:"OutDry Extreme Mesh Hooded Shell", img:"assets/products/outdry-extreme-mesh-shell.jpg", line:"Seam-sealed. Nothing gets in. Not even the WhatsApp.", icon:"shell", tilt:"1deg"},
-  {cat:"Fleece", n:"Titan Pass Fleece", img:"assets/products/titan-pass-fleece.jpg", line:"Thumb loops. Hands free for nothing at all.", icon:"fleece", tilt:"-1.5deg"},
+  // Photos are Columbia's own (style_colour in the file name). Names marked TBC need confirming.
+  {cat:"Boots",  n:"Tellurix Titanium OutDry Mid", img:"assets/products/2165651_010_tellurix-titanium-outdry-mid.avif", line:"Waterproof. In-law tested.", icon:"boot", tilt:"-2deg"},
+  {cat:"Down",   n:"Arctic Crest Down Hooded Jacket", img:"assets/products/2086074_309_down-hooded-jacket.avif", line:"Nobody's taking your coat at the door.", icon:"puffer", tilt:"1.5deg"},
+  {cat:"Fleece", n:"Titanium Full-Zip (name TBC)", img:"assets/products/2164442_606_full-zip.avif", line:"Thumb loops. Hands free for nothing at all.", icon:"fleece", tilt:"1deg"},
+  {cat:"Boots",  n:"Titanium Boot (name TBC)", img:"assets/products/2165641_442_boot.avif", line:"Grips wet rock. Nobody's asking you to stay.", icon:"boot", tilt:"-1.5deg"},
 ];
 const RANGE_ICON = {
   boot:`<path d="M30 14 H58 V58 L84 66 Q94 69 94 78 V84 H26 Z" fill="#7a4b2e"/><rect x="22" y="84" width="76" height="9" rx="3" fill="#24302a"/><path d="M34 26 H54 M34 36 H54 M34 46 H54" stroke="#f1e6cf" stroke-width="3"/>`,
@@ -1247,7 +1250,7 @@ const RANGE_ICON = {
   fleece:`<path d="M40 18 L60 24 L80 18 L98 34 L92 92 H28 L22 34Z" fill="#9aa58a"/><path d="M60 24 V92" stroke="#6f7a60" stroke-width="2.5"/><path d="M48 18 L60 30 L72 18" fill="none" stroke="#6f7a60" stroke-width="3"/><circle cx="40" cy="70" r="2" fill="#6f7a60"/><circle cx="80" cy="70" r="2" fill="#6f7a60"/>`,
 };
 $("#range").innerHTML = RANGE.map(p=>`<article class="product no-img" style="--tilt:${p.tilt}">
-  <div class="ph"><span class="cat">${esc(p.cat)}</span><img src="${p.img}" alt="${esc(p.n)}" loading="lazy" onload="this.closest('.product').classList.remove('no-img')"><svg viewBox="0 0 120 110" aria-hidden="true">${RANGE_ICON[p.icon]}</svg></div>
+  <div class="ph"><span class="cat">${esc(p.cat)}</span><img src="${p.img}" alt="${esc(p.n)}" onload="this.closest('.product').classList.remove('no-img')"><svg viewBox="0 0 120 110" aria-hidden="true">${RANGE_ICON[p.icon]}</svg></div>
   <div class="meta"><b>${esc(p.n)}</b><span>${esc(p.line)}</span></div></article>`).join("");
 
 /* =========================================================================
