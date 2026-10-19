@@ -41,7 +41,25 @@ a{color:inherit}
 .hero .snow.b{opacity:.3;background-size:200px 170px;animation-duration:22s}
 @keyframes snow{from{background-position:0 0}to{background-position:-60px 240px}}
 @media (prefers-reduced-motion:reduce){.hero .snow{animation:none}}
-.hero-inner{position:relative;max-width:1080px;margin:0 auto}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:48px;align-items:center}
+@media (max-width:1020px){.hero-inner{grid-template-columns:1fr;gap:36px}}
+
+/* ---------- Titanium range beside the header ---------- */
+.range-head{font-family:var(--label);text-transform:uppercase;letter-spacing:.16em;font-size:13px;color:#c9d8c4;margin:0 0 12px}
+.range-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.product{background:var(--paper);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 18px 30px -18px rgba(0,0,0,.6);display:flex;flex-direction:column;transform:rotate(var(--tilt,0deg));transition:transform .2s}
+.product:hover{transform:rotate(0deg) translateY(-3px)}
+.product .ph{position:relative;aspect-ratio:1/1;background:#fff;display:grid;place-items:center;overflow:hidden}
+.product .ph img{width:100%;height:100%;object-fit:contain;padding:8%}
+.product .ph svg{width:58%;height:58%;display:none}
+.product.no-img .ph img{display:none}
+.product.no-img .ph svg{display:block}
+.product .ph .cat{position:absolute;left:10px;top:10px;font-family:var(--label);text-transform:uppercase;letter-spacing:.1em;font-weight:700;font-size:11px;background:var(--pine);color:var(--cream);border-radius:999px;padding:3px 9px}
+.product .meta{padding:10px 12px 12px}
+.product b{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.04em;font-size:15px;line-height:1.15}
+.product span{display:block;font-family:var(--hand);font-size:19px;line-height:1.05;color:var(--red);margin-top:4px}
+@media (max-width:1020px){.range-grid{grid-template-columns:repeat(4,minmax(150px,1fr));overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory}.product{scroll-snap-align:start;--tilt:0deg!important}}
+@media (max-width:640px){.range-grid{grid-template-columns:repeat(4,64%)}}
 .hero-logo{display:block;width:clamp(120px,16vw,170px);height:auto;margin:0 0 28px}
 .kicker{font-family:var(--label);text-transform:uppercase;letter-spacing:.18em;font-size:14px;color:#c9d8c4;margin:0 0 18px}
 .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(44px,8vw,104px);line-height:.95;letter-spacing:-.02em;margin:0;max-width:11ch}
@@ -208,10 +226,16 @@ footer .line{font-family:var(--display);font-weight:800;font-size:28px;color:var
 <section class="hero">
   <div class="snow"></div><div class="snow b"></div>
   <div class="hero-inner">
-    <img class="hero-logo" src="assets/mapping-paper-logo.png" alt="Mapping Paper">
-    <p class="kicker">Christmas is for family. For about four hours.</p>
-    <h1>This Christmas, <em>give them the slip.</em></h1>
-    <p class="lede">Tell us where your gift recipient is spending Christmas with the family. We'll draw the way out to the nearest proper wilderness, print it on wrapping paper, and wrap their new boots in it.</p>
+    <div class="hero-copy">
+      <img class="hero-logo" src="assets/mapping-paper-logo.png" alt="Mapping Paper">
+      <p class="kicker">Christmas is for family. For about four hours.</p>
+      <h1>This Christmas, <em>give them the slip.</em></h1>
+      <p class="lede">Tell us where your gift recipient is spending Christmas with the family. We'll draw the way out to the nearest proper wilderness, print it on wrapping paper, and wrap their new boots in it.</p>
+    </div>
+    <aside class="range" aria-label="The Titanium range: Mapping Paper only wraps these">
+      <p class="range-head">Only wraps the Titanium range</p>
+      <div class="range-grid" id="range"></div>
+    </aside>
   </div>
   <svg class="ridge" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
     <path d="M0 120 L0 70 L110 30 L190 62 L300 12 L380 50 L470 26 L560 70 L660 20 L760 64 L860 34 L960 74 L1060 18 L1150 56 L1250 30 L1350 66 L1440 40 L1440 120Z" fill="#2a4538"/>
@@ -1205,6 +1229,26 @@ function icon(mode){
   if(mode==="ferry") return `<g><rect x="-7" y="-9" width="13" height="8" fill="#fff" stroke="${c}" stroke-width="1.5"/><rect x="1" y="-15" width="4" height="6" fill="${PAL.route}"/><path d="M-15 0 L15 0 L10 8 L-10 8Z" fill="#2f6f96"/><path d="M-14 13 q3.5 -3 7 0 q3.5 -3 7 0 q3.5 -3 7 0 q3.5 -3 7 0" fill="none" stroke="#2f6f96" stroke-width="2"/></g>`;
   return `<g><path d="M-7 -14 L3 -14 L3 1 L12 4 Q15 5 15 8 L15 10 L-8 10Z" fill="#7a4b2e"/><rect x="-9" y="10" width="25" height="4" rx="1.5" fill="${c}"/><path d="M-7 -8 H3 M-7 -3 H3" stroke="#f1e6cf" stroke-width="1.5"/></g>`;
 }
+
+/* =========================================================================
+   TITANIUM RANGE (header)
+   Photos live in assets/products/. Until a photo is there, the card shows a drawn icon.
+   ========================================================================= */
+const RANGE = [
+  {cat:"Boots",  n:"Tellurix Titanium OutDry Mid", img:"assets/products/tellurix-titanium-outdry-mid.jpg", line:"Waterproof. In-law tested.", icon:"boot", tilt:"-2deg"},
+  {cat:"Down",   n:"Arctic Crest Down Hooded Jacket", img:"assets/products/arctic-crest-down-hooded-jacket.jpg", line:"700-fill down. Nobody's taking your coat at the door.", icon:"puffer", tilt:"1.5deg"},
+  {cat:"Shell",  n:"OutDry Extreme Mesh Hooded Shell", img:"assets/products/outdry-extreme-mesh-shell.jpg", line:"Seam-sealed. Nothing gets in. Not even the WhatsApp.", icon:"shell", tilt:"1deg"},
+  {cat:"Fleece", n:"Titan Pass Fleece", img:"assets/products/titan-pass-fleece.jpg", line:"Thumb loops. Hands free for nothing at all.", icon:"fleece", tilt:"-1.5deg"},
+];
+const RANGE_ICON = {
+  boot:`<path d="M30 14 H58 V58 L84 66 Q94 69 94 78 V84 H26 Z" fill="#7a4b2e"/><rect x="22" y="84" width="76" height="9" rx="3" fill="#24302a"/><path d="M34 26 H54 M34 36 H54 M34 46 H54" stroke="#f1e6cf" stroke-width="3"/>`,
+  puffer:`<path d="M38 16 L60 22 L82 16 L98 34 L92 92 H28 L22 34Z" fill="#2f5a7a"/><path d="M26 44 H94 M25 60 H95 M26 76 H94" stroke="#244861" stroke-width="3"/><path d="M60 22 V92" stroke="#1b3447" stroke-width="2.5"/><path d="M44 16 Q60 4 76 16 L60 24Z" fill="#244861"/>`,
+  shell:`<path d="M40 18 L60 26 L80 18 L100 36 L94 92 H26 L20 36Z" fill="#b3261e"/><path d="M60 26 V92" stroke="#7d1914" stroke-width="2.5"/><path d="M42 18 Q60 0 78 18 L60 28Z" fill="#8f1b15"/><path d="M30 52 L42 56 M90 52 L78 56" stroke="#7d1914" stroke-width="3" stroke-linecap="round"/>`,
+  fleece:`<path d="M40 18 L60 24 L80 18 L98 34 L92 92 H28 L22 34Z" fill="#9aa58a"/><path d="M60 24 V92" stroke="#6f7a60" stroke-width="2.5"/><path d="M48 18 L60 30 L72 18" fill="none" stroke="#6f7a60" stroke-width="3"/><circle cx="40" cy="70" r="2" fill="#6f7a60"/><circle cx="80" cy="70" r="2" fill="#6f7a60"/>`,
+};
+$("#range").innerHTML = RANGE.map(p=>`<article class="product no-img" style="--tilt:${p.tilt}">
+  <div class="ph"><span class="cat">${esc(p.cat)}</span><img src="${p.img}" alt="${esc(p.n)}" loading="lazy" onload="this.closest('.product').classList.remove('no-img')"><svg viewBox="0 0 120 110" aria-hidden="true">${RANGE_ICON[p.icon]}</svg></div>
+  <div class="meta"><b>${esc(p.n)}</b><span>${esc(p.line)}</span></div></article>`).join("");
 
 /* =========================================================================
    UI
